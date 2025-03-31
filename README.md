@@ -652,3 +652,933 @@ System.out.println(a >>> 1); // Output: 2147483644 (Unsigned shift)
    - `>>` → Preserves sign (arithmetic shift).  
    - `>>>` → Ignores sign (logical shift).  
 
+### **38) Allowed Access Modifiers for Top-Level Classes in Java**  
+In Java, a **top-level class** (not nested) can have only **two access modifiers**:  
+
+1. **`public`** → The class is accessible from any other class.  
+   ```java
+   public class MyClass { ... }  // Accessible everywhere
+   ```
+2. **Default (no modifier)** → The class is accessible only within the **same package**.  
+   ```java
+   class MyPackagePrivateClass { ... }  // Accessible only in its package
+   ```
+
+❌ **Not Allowed for Top-Level Classes:**  
+- `private` (only for nested classes).  
+- `protected` (only for members, not classes).  
+
+---
+
+### **Java Coding Standards for Interfaces**  
+1. **Naming Convention**:  
+   - Use **PascalCase** (e.g., `Runnable`, `Serializable`).  
+   - Prefix with `I` (optional, e.g., `IPayment`).  
+
+2. **Method Declarations**:  
+   - All methods are **implicitly `public abstract`** (no need to specify).  
+   ```java
+   interface Vehicle {
+       void start();  // Automatically public abstract
+   }
+   ```
+
+3. **Constants**:  
+   - Fields are **implicitly `public static final`**.  
+   ```java
+   interface Constants {
+       int MAX_SPEED = 100;  // Automatically public static final
+   }
+   ```
+
+4. **Default/Static Methods (Java 8+)**:  
+   - Use `default` for methods with implementations.  
+   - Use `static` for utility methods.  
+   ```java
+   interface Logger {
+       default void log(String message) {  // Default method
+           System.out.println(message);
+       }
+       static void debug(String msg) {     // Static method
+           System.out.println("[DEBUG] " + msg);
+       }
+   }
+   ```
+
+5. **Functional Interfaces (Java 8+)**:  
+   - Should have **only one abstract method** (e.g., `Runnable`, `Comparator`).  
+   ```java
+   @FunctionalInterface
+   interface Greeter {
+       void greet(String name);  // Single abstract method
+   }
+   ```
+
+---
+
+### **35) `instanceof` Operator in Java**  
+- **Purpose**: Checks if an object is an **instance of a class/interface** at runtime.  
+- **Syntax**: `object instanceof Class/Interface`  
+- **Returns**: `true` if the object is an instance, else `false`.  
+
+**Example**:  
+```java
+Object obj = "Hello";
+System.out.println(obj instanceof String);  // true
+System.out.println(obj instanceof Integer); // false
+```
+
+**Use Cases**:  
+- **Type checking** before casting (avoid `ClassCastException`).  
+- **Polymorphism** handling.  
+
+**Java 16+ Pattern Matching**:  
+```java
+if (obj instanceof String s) {  // Directly casts and assigns to 's'
+    System.out.println(s.length());
+}
+```
+
+---
+
+### **36) What Does `null` Mean in Java?**  
+- **Definition**: `null` is a **special literal** representing the absence of an object.  
+- **Default Value**: For all **reference types** (e.g., `String`, `Object`).  
+- **Key Behaviors**:  
+  - Cannot call methods on `null` (throws `NullPointerException`).  
+  - `null == null` evaluates to `true`.  
+
+**Example**:  
+```java
+String str = null;
+System.out.println(str);          // Output: null
+System.out.println(str.length()); // Throws NullPointerException
+```
+
+**Handling `null` Safely**:  
+1. **Null Checks**:  
+   ```java
+   if (str != null) {
+       System.out.println(str.length());
+   }
+   ```
+2. **Optional Class (Java 8+)**:  
+   ```java
+   Optional<String> optionalStr = Optional.ofNullable(str);
+   optionalStr.ifPresent(s -> System.out.println(s.length()));
+   ```
+
+---
+
+### **Summary Table**  
+| Topic                     | Key Points                                                                 |
+|---------------------------|---------------------------------------------------------------------------|
+| **Top-Class Modifiers**   | Only `public` or default (package-private).                               |
+| **Interface Standards**   | PascalCase, implicit `public abstract` methods, `default`/`static` methods allowed. |
+| **`instanceof`**         | Runtime type check, returns `boolean`, used for safe casting.             |
+| **`null`**               | Default for references, causes `NullPointerException` if misused.         |
+
+
+### **43) What are Access Modifiers in Java?**  
+**Access modifiers** control the **visibility** of classes, methods, and variables in Java. They determine which parts of your code can access these members.  
+
+#### **Types of Access Modifiers:**  
+1. **`public`** → Accessible **everywhere**.  
+2. **`protected`** → Accessible within the **same package + subclasses (even in other packages)**.  
+3. **`default` (no keyword)** → Accessible only within the **same package**.  
+4. **`private`** → Accessible only within the **same class**.  
+
+---
+
+### **44) Difference Between Access Specifiers and Access Modifiers**  
+| Term               | Meaning                                                                 |
+|--------------------|-------------------------------------------------------------------------|
+| **Access Modifier** | Official Java term (e.g., `public`, `private`, `protected`, `default`). |
+| **Access Specifier** | Older term (same as access modifier). **No difference in Java.**       |
+
+> In Java, both terms refer to the same thing. The correct term is **access modifier**.
+
+---
+
+### **45) Access Modifiers for Classes**  
+| Modifier    | Allowed for Top-Level Class? | Allowed for Nested Class? |
+|-------------|-----------------------------|--------------------------|
+| **`public`** | ✅ Yes                      | ✅ Yes                   |
+| **`protected`** | ❌ No                       | ✅ Yes                   |
+| **`private`** | ❌ No                       | ✅ Yes                   |
+| **`default`** | ✅ Yes (no keyword)         | ✅ Yes                   |
+
+**Example:**  
+```java
+public class MyClass { ... }       // ✅ Top-level public class  
+private class InnerClass { ... }   // ✅ Nested private class  
+protected class Invalid { ... }    // ❌ Top-level protected (invalid)  
+```
+
+---
+
+### **46) Access Modifiers for Methods**  
+| Modifier    | Visibility                                                                 |
+|-------------|----------------------------------------------------------------------------|
+| **`public`** | Accessible **everywhere**.                                                 |
+| **`protected`** | Accessible in **same package + subclasses (even in other packages)**.      |
+| **`default`** | Accessible only in **same package**.                                       |
+| **`private`** | Accessible only in **same class**.                                         |
+
+**Example:**  
+```java
+public void show() { ... }       // Accessible everywhere  
+protected void display() { ... } // Accessible in package + subclasses  
+void print() { ... }             // Package-private (default)  
+private void log() { ... }       // Only within the same class  
+```
+
+---
+
+### **47) Access Modifiers for Variables**  
+Same rules as methods:  
+
+| Modifier    | Visibility                                                                 |
+|-------------|----------------------------------------------------------------------------|
+| **`public`** | Accessible **everywhere**.                                                 |
+| **`protected`** | Accessible in **same package + subclasses**.                               |
+| **`default`** | Accessible only in **same package**.                                       |
+| **`private`** | Accessible only in **same class**.                                         |
+
+**Example:**  
+```java
+public int x = 10;         // Accessible everywhere  
+protected int y = 20;      // Accessible in package + subclasses  
+int z = 30;                // Package-private (default)  
+private int w = 40;        // Only within the same class  
+```
+
+---
+
+### **48) Final Access Modifier in Java**  
+The **`final`** keyword is **not an access modifier** but a **non-access modifier** that restricts further modification.  
+
+#### **Uses of `final`:**  
+1. **Final Variable** → Value cannot be changed (constant).  
+   ```java
+   final int MAX = 100;  
+   // MAX = 200; ❌ Error (cannot reassign)  
+   ```
+2. **Final Method** → Cannot be **overridden** by subclasses.  
+   ```java
+   public final void preventOverride() { ... }  
+   ```
+3. **Final Class** → Cannot be **extended (inherited)**.  
+   ```java
+   public final class Immutable { ... }  
+   // class SubClass extends Immutable { ❌ Error }  
+   ```
+
+---
+
+### **Summary Table**  
+| Concept               | Key Points                                                                 |
+|-----------------------|---------------------------------------------------------------------------|
+| **Access Modifiers**  | `public`, `protected`, `default`, `private` (control visibility).         |
+| **Class Modifiers**   | Top-level: `public` or `default`. Nested: All 4.                          |
+| **Method/Variable**   | All 4 modifiers apply.                                                    |
+| **`final`**          | Makes variables constant, methods un-overridable, classes un-inheritable. |
+
+### **49) Abstract Classes in Java**  
+**Definition:**  
+An **abstract class** is a class that **cannot be instantiated** (cannot create objects) and may contain **abstract methods** (methods without a body).  
+
+**Key Points:**  
+✔ Can have **both abstract and concrete methods**.  
+✔ Used to provide a **common base** for subclasses.  
+✔ Must be extended by a subclass to be used.  
+
+**Example:**  
+```java
+abstract class Animal {
+    abstract void sound();  // Abstract method (no body)
+    
+    void sleep() {          // Concrete method
+        System.out.println("Zzz");
+    }
+}
+
+class Dog extends Animal {
+    void sound() {          // Must override abstract method
+        System.out.println("Bark!");
+    }
+}
+```
+
+---
+
+### **50) Can We Create a Constructor in an Abstract Class?**  
+**✅ Yes!**  
+- Abstract classes **can have constructors**, but they are **called only when a subclass is instantiated**.  
+- Used to initialize common properties for subclasses.  
+
+**Example:**  
+```java
+abstract class Vehicle {
+    String type;
+    
+    Vehicle(String type) {  // Constructor
+        this.type = type;
+    }
+}
+
+class Car extends Vehicle {
+    Car() {
+        super("Car");  // Calls abstract class constructor
+    }
+}
+```
+
+---
+
+### **51) Abstract Methods in Java**  
+**Definition:**  
+- A method **without a body** (only declaration) that must be **overridden by subclasses**.  
+- Defined using the `abstract` keyword.  
+
+**Rules:**  
+✔ Can only exist in **abstract classes/interfaces**.  
+✔ Subclasses **must override** them (or be declared `abstract`).  
+
+**Example:**  
+```java
+abstract class Shape {
+    abstract double area();  // No implementation
+}
+
+class Circle extends Shape {
+    double radius;
+    
+    double area() {          // Must override
+        return 3.14 * radius * radius;
+    }
+}
+```
+
+---
+
+### **52) What is an Exception in Java?**  
+**Definition:**  
+An **exception** is an **unexpected event** that disrupts normal program flow (e.g., division by zero, file not found).  
+
+**Example:**  
+```java
+int x = 10 / 0;  // Throws ArithmeticException
+```
+
+---
+
+### **53) Situations Where Exceptions May Arise**  
+1. **ArithmeticException** → Division by zero.  
+2. **NullPointerException** → Accessing `null` object.  
+3. **ArrayIndexOutOfBoundsException** → Invalid array index.  
+4. **FileNotFoundException** → Missing file.  
+5. **NumberFormatException** → Invalid string-to-number conversion.  
+
+---
+
+### **54) Exception Handling in Java**  
+**Definition:**  
+A mechanism to **handle runtime errors** gracefully using:  
+- `try` (monitor for exceptions),  
+- `catch` (handle exceptions),  
+- `finally` (execute cleanup code).  
+
+**Example:**  
+```java
+try {
+    int x = 10 / 0;
+} catch (ArithmeticException e) {
+    System.out.println("Cannot divide by zero!");
+} finally {
+    System.out.println("Cleanup done.");
+}
+```
+
+---
+
+### **55) What is an Error in Java?**  
+**Definition:**  
+- **Unrecoverable** system-level problems (e.g., `OutOfMemoryError`, `StackOverflowError`).  
+- Unlike exceptions, **errors should not be caught/handled**.  
+
+**Example:**  
+```java
+public class Test {
+    public static void main(String[] args) {
+        recursiveMethod();  // Causes StackOverflowError
+    }
+    static void recursiveMethod() {
+        recursiveMethod();
+    }
+}
+```
+
+---
+
+### **56) Advantages of Exception Handling**  
+1. **Prevents crashes** by handling errors gracefully.  
+2. **Separates error-handling code** from business logic.  
+3. **Propagates errors** up the call stack.  
+4. **Grouping and differentiation** of error types.  
+
+---
+
+### **57) Ways to Handle Exceptions**  
+1. **`try-catch`** → Handle exceptions locally.  
+2. **`throws`** → Declare exceptions for the caller to handle.  
+3. **`finally`** → Ensure cleanup code runs.  
+4. **`try-with-resources`** → Auto-close resources (Java 7+).  
+
+**Example of `throws`:**  
+```java
+void readFile() throws IOException {
+    Files.readAllLines(Paths.get("file.txt"));
+}
+```
+
+---
+
+### **58) Five Keywords for Exception Handling**  
+1. **`try`** → Encloses risky code.  
+2. **`catch`** → Handles exceptions.  
+3. **`finally`** → Executes mandatory cleanup.  
+4. **`throw`** → Manually throw an exception.  
+5. **`throws`** → Declares exceptions a method might throw.  
+
+**Example of `throw`:**  
+```java
+if (age < 18) {
+    throw new ArithmeticException("Age must be ≥18");
+}
+```
+
+---
+
+### **Summary Table**  
+| Concept               | Key Points                                                                 |
+|-----------------------|---------------------------------------------------------------------------|
+| **Abstract Class**    | Cannot be instantiated; may have abstract/concrete methods.               |
+| **Abstract Method**   | No body; must be overridden.                                              |
+| **Exceptions**        | `try-catch-finally`, `throws`, `throw`.                                   |
+| **Errors**           | Unrecoverable (e.g., `OutOfMemoryError`).                                 |
+
+### **59) `try` and `catch` Keywords in Java**  
+**Purpose:** Handle exceptions gracefully.  
+- **`try` block:** Contains code that might throw an exception.  
+- **`catch` block:** Handles the exception if it occurs.  
+
+**Example:**  
+```java
+try {
+    int x = 10 / 0; // Throws ArithmeticException
+} catch (ArithmeticException e) {
+    System.out.println("Cannot divide by zero!");
+}
+```
+
+---
+
+### **60) Can We Have a `try` Block Without a `catch` Block?**  
+**✅ Yes**, but only if:  
+- It has a `finally` block, or  
+- The method declares the exception using `throws`.  
+
+**Example:**  
+```java
+try {
+    Files.readAllLines(Paths.get("file.txt"));
+} finally {
+    System.out.println("Cleanup");
+}
+```
+
+---
+
+### **61) Can We Have Multiple `catch` Blocks for a `try` Block?**  
+**✅ Yes**, but order matters:  
+- Catch **more specific exceptions first** (e.g., `ArithmeticException` before `Exception`).  
+
+**Example:**  
+```java
+try {
+    int[] arr = new int[5];
+    arr[10] = 50; // Throws ArrayIndexOutOfBoundsException
+} catch (ArithmeticException e) {
+    System.out.println("Math error");
+} catch (ArrayIndexOutOfBoundsException e) {
+    System.out.println("Array index error");
+}
+```
+
+---
+
+### **62) Importance of `finally` Block**  
+- **Guaranteed execution** (even if an exception occurs or a `return` is called).  
+- Used for **cleanup** (e.g., closing files, database connections).  
+
+**Example:**  
+```java
+try {
+    System.out.println("Inside try");
+} catch (Exception e) {
+    System.out.println("Exception caught");
+} finally {
+    System.out.println("Always executes");
+}
+```
+
+---
+
+### **63) Can We Have Code Between `try` and `catch` Blocks?**  
+**❌ No.**  
+- `catch` must **immediately follow** `try`.  
+
+**Invalid Example:**  
+```java
+try {
+    // Code
+}
+System.out.println("Hello"); // ❌ Compile error
+catch (Exception e) { ... }
+```
+
+---
+
+### **64) Can We Have Code Between `try` and `finally` Blocks?**  
+**❌ No.**  
+- `finally` must **immediately follow** the last `catch` (or `try` if no `catch`).  
+
+**Invalid Example:**  
+```java
+try {
+    // Code
+}
+System.out.println("Hello"); // ❌ Compile error
+finally { ... }
+```
+
+---
+
+### **65) Can We Catch Multiple Exceptions in a Single `catch` Block?**  
+**✅ Yes (Java 7+)**  
+- Use the **pipe (`|`) symbol** to combine exceptions.  
+
+**Example:**  
+```java
+try {
+    // Risky code
+} catch (ArithmeticException | NullPointerException e) {
+    System.out.println("Caught: " + e.getClass());
+}
+```
+
+---
+
+### **66) Checked Exceptions**  
+- **Checked at compile-time**. Must be handled (using `try-catch` or `throws`).  
+- Examples: `IOException`, `SQLException`.  
+
+**Example:**  
+```java
+try {
+    Files.readAllLines(Paths.get("file.txt")); // Throws IOException (checked)
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+---
+
+### **67) Unchecked Exceptions**  
+- **Not checked at compile-time** (subclasses of `RuntimeException`).  
+- Examples: `NullPointerException`, `ArrayIndexOutOfBoundsException`.  
+
+**Example:**  
+```java
+String s = null;
+System.out.println(s.length()); // Throws NullPointerException (unchecked)
+```
+
+---
+
+### **68) Differences Between Checked and Unchecked Exceptions**  
+| Feature               | Checked Exceptions          | Unchecked Exceptions        |  
+|-----------------------|----------------------------|----------------------------|  
+| **Compile-Time Check** | ✅ Yes                     | ❌ No                      |  
+| **Handling Required**  | ✅ Yes (or `throws`)       | ❌ No (optional)           |  
+| **Examples**          | `IOException`, `SQLException` | `NullPointerException`, `ArithmeticException` |  
+
+---
+
+### **69) Default Exception Handling in Java**  
+- If an exception is **not caught**, the JVM:  
+  1. Prints the **exception stack trace**.  
+  2. **Terminates the program**.  
+
+**Example:**  
+```java
+public class Main {
+    public static void main(String[] args) {
+        int x = 10 / 0; // Uncaught ArithmeticException
+    }
+}
+// Output:  
+// Exception in thread "main" java.lang.ArithmeticException: / by zero
+```
+
+---
+
+### **70) `throw` Keyword**  
+- **Manually throws an exception** (custom or built-in).  
+
+**Example:**  
+```java
+if (age < 18) {
+    throw new ArithmeticException("Age must be ≥18");
+}
+```
+
+---
+
+### **71) Can We Write Code After `throw`?**  
+**❌ No.**  
+- `throw` **terminates** the current block (like `return`).  
+
+**Example:**  
+```java
+throw new Exception("Error");
+System.out.println("Unreachable"); // ❌ Compile error
+```
+
+---
+
+### **72) `throws` Keyword**  
+- **Declares exceptions** a method might throw (used for checked exceptions).  
+
+**Example:**  
+```java
+void readFile() throws IOException {
+    Files.readAllLines(Paths.get("file.txt"));
+}
+```
+
+---
+
+### **73) `finally` vs `return`**  
+- `finally` executes **even if `return` is called** in `try`/`catch`.  
+
+**Example:**  
+```java
+try {
+    return 10;
+} finally {
+    System.out.println("Finally runs!"); // Executes before return
+}
+```
+
+---
+
+### **74) When `finally` Does Not Execute**  
+- **JVM crashes** (e.g., `System.exit(0)`).  
+- **Infinite loop** in `try`/`catch`.  
+
+**Example:**  
+```java
+try {
+    System.exit(0); // JVM exits
+} finally {
+    System.out.println("Never runs");
+}
+```
+
+---
+
+### **75) Can We Use `catch` for Checked Exceptions?**  
+**✅ Yes**, but it’s **optional** (unlike `throws`).  
+
+**Example:**  
+```java
+try {
+    throw new IOException("Checked exception");
+} catch (IOException e) { // Optional for unchecked, mandatory for checked
+    e.printStackTrace();
+}
+```
+
+---
+
+### **76) User-Defined Exceptions**  
+- Custom exceptions **extending `Exception` or `RuntimeException`**.  
+
+**Example:**  
+```java
+class InvalidAgeException extends Exception {
+    InvalidAgeException(String message) {
+        super(message);
+    }
+}
+
+// Usage:
+throw new InvalidAgeException("Age must be ≥18");
+```
+
+---
+
+### **77) Rethrowing Exceptions**  
+- **✅ Yes**, use `throw` in `catch`.  
+
+**Example:**  
+```java
+try {
+    // Risky code
+} catch (IOException e) {
+    throw e; // Rethrow
+}
+```
+
+---
+
+### **78) Nested `try` Statements**  
+- **✅ Yes**, `try` blocks can be nested.  
+
+**Example:**  
+```java
+try {
+    try {
+        int x = 10 / 0;
+    } catch (ArithmeticException e) {
+        System.out.println("Inner catch");
+    }
+} catch (Exception e) {
+    System.out.println("Outer catch");
+}
+```
+
+---
+
+### **79) `Throwable` Class and Methods**  
+- **Superclass** of all errors/exceptions.  
+- Key methods:  
+  - `getMessage()` → Returns error details.  
+  - `printStackTrace()` → Prints stack trace.  
+
+**Example:**  
+```java
+try {
+    int x = 10 / 0;
+} catch (Throwable t) {
+    System.out.println(t.getMessage()); // "/ by zero"
+}
+```
+
+---
+
+### **80) `ClassNotFoundException`**  
+- Raised when **a class is not found** at runtime (e.g., missing JAR).  
+
+**Example:**  
+```java
+try {
+    Class.forName("NonExistentClass");
+} catch (ClassNotFoundException e) {
+    e.printStackTrace();
+}
+```
+
+---
+
+### **81) `NoClassDefFoundError`**  
+- Raised when **a compiled class is missing** during execution (e.g., deleted `.class` file).  
+
+**Example:**  
+```java
+// Compiles but fails at runtime if MyClass is missing.
+MyClass obj = new MyClass(); // Throws NoClassDefFoundError
+```
+
+---
+
+### **Summary Table**  
+| Concept               | Key Points                                                                 |
+|-----------------------|---------------------------------------------------------------------------|
+| **`try-catch`**       | Handle exceptions; `finally` always executes.                             |
+| **Checked Exceptions** | Must be handled (`try-catch`/`throws`).                                   |
+| **`throw`/`throws`** | `throw` raises exceptions; `throws` declares them.                        |
+| **User-Defined Exceptions** | Extend `Exception` or `RuntimeException`.                              |
+
+### **90) Java APIs That Support Threads**  
+Java provides built-in APIs for multithreading:  
+1. **`java.lang.Thread`** → Base class for creating/controlling threads.  
+2. **`java.lang.Runnable`** → Functional interface for thread tasks.  
+3. **`java.util.concurrent`** → High-level concurrency utilities:  
+   - **`ExecutorService`** → Thread pool management.  
+   - **`Lock`** → Advanced synchronization.  
+   - **`CountDownLatch`**, **`CyclicBarrier`** → Thread coordination.  
+
+**Example:**  
+```java
+// Using Thread class
+Thread t1 = new Thread(() -> System.out.println("Thread running"));
+t1.start();
+
+// Using ExecutorService
+ExecutorService executor = Executors.newFixedThreadPool(2);
+executor.submit(() -> System.out.println("Task executed"));
+```
+
+---
+
+### **96) Importance of Thread Scheduler in Java**  
+- **Role:** The JVM’s thread scheduler decides **which thread runs next** (order is unpredictable).  
+- **Policies:**  
+  - **Preemptive Scheduling:** Higher-priority threads get CPU time first.  
+  - **Time-Slicing:** Each thread gets a fixed time slice.  
+
+**Key Points:**  
+✔ No guarantees on execution order (platform-dependent).  
+✔ Use `Thread.sleep()`, `wait()`, or `yield()` for coordination.  
+
+---
+
+### **98) Can We Restart a Dead Thread in Java?**  
+**❌ No.**  
+- A thread **dies after `run()` completes** and cannot be restarted.  
+- **Workaround:** Create a new thread instance.  
+
+**Example:**  
+```java
+Thread t = new Thread(() -> System.out.println("Running"));
+t.start();
+t.join(); // Thread dies here
+t.start(); // ❌ Throws IllegalThreadStateException
+```
+
+---
+
+### **101) What Happens If We Don’t Override `run()`?**  
+- The **default `run()`** in `Thread` class does **nothing**.  
+- **Result:** The thread starts but executes no task.  
+
+**Example:**  
+```java
+Thread t = new Thread(); // No run() override
+t.start(); // Runs but does nothing
+```
+
+---
+
+### **102) Can We Overload `run()` in Java?**  
+**✅ Yes**, but only the **no-args `run()`** is invoked by `start()`.  
+
+**Example:**  
+```java
+class MyThread extends Thread {
+    public void run() { System.out.println("Default run"); }
+    public void run(int x) { System.out.println("Overloaded run"); }
+}
+
+MyThread t = new MyThread();
+t.start(); // Calls run() → "Default run"
+t.run(10); // Calls overloaded run(int) → "Overloaded run"
+```
+
+---
+
+### **105) Purpose of Locks in Java**  
+- **Ensure thread safety** by controlling access to shared resources.  
+- **Types:**  
+  - **Intrinsic Locks (`synchronized`)** → Built into every Java object.  
+  - **Explicit Locks (`ReentrantLock`)** → More flexible than `synchronized`.  
+
+**Example:**  
+```java
+// Intrinsic lock
+synchronized (this) { /* Critical section */ }
+
+// Explicit lock
+Lock lock = new ReentrantLock();
+lock.lock();
+try { /* Critical section */ } finally { lock.unlock(); }
+```
+
+---
+
+### **106) Ways to Achieve Synchronization in Java**  
+1. **Synchronized Methods** → Lock the entire method.  
+   ```java
+   public synchronized void syncMethod() { ... }
+   ```
+2. **Synchronized Blocks** → Lock specific code sections.  
+   ```java
+   synchronized (obj) { /* Critical section */ }
+   ```
+3. **`volatile` Keyword** → Ensures visibility of changes across threads.  
+   ```java
+   private volatile boolean flag;
+   ```
+4. **Explicit Locks (`ReentrantLock`)** → More control than `synchronized`.  
+
+---
+
+### **107) Synchronized Methods**  
+- **Lock:** The entire method locks the **object’s monitor** (for instance methods) or **class monitor** (for static methods).  
+- **Usage:** Prevents concurrent access to shared data.  
+
+**Example:**  
+```java
+public class Counter {
+    private int count;
+    public synchronized void increment() { count++; } // Thread-safe
+}
+```
+
+---
+
+### **108) When to Use Synchronized Methods?**  
+- **Shared Mutable Data:** When multiple threads access/modify the same object.  
+- **Critical Sections:** To avoid race conditions (e.g., bank account withdrawals).  
+
+**Example:**  
+```java
+public class BankAccount {
+    private double balance;
+    public synchronized void withdraw(double amount) {
+        if (balance >= amount) balance -= amount;
+    }
+}
+```
+
+---
+
+### **Can Other Threads Execute Synchronized Methods Simultaneously?**  
+**❌ No.**  
+- If one thread holds the lock (executing a synchronized method), **other threads must wait** to enter **any synchronized method** of the same object.  
+
+**Example:**  
+```java
+class Test {
+    public synchronized void methodA() { /* Holds lock */ }
+    public synchronized void methodB() { /* Waits if methodA is running */ }
+}
+
+// Thread 1: test.methodA() → Locks object  
+// Thread 2: test.methodB() → Blocks until lock is released  
+```
+
+---
+
+### **Key Takeaways**  
+| Concept               | Key Points                                                                 |
+|-----------------------|---------------------------------------------------------------------------|
+| **Thread APIs**       | `Thread`, `Runnable`, `ExecutorService`, `Lock`.                          |
+| **Thread Scheduler**  | Controls execution order (no guarantees).                                 |
+| **Dead Threads**      | Cannot restart; create a new thread.                                      |
+| **Synchronization**   | Use `synchronized`, `volatile`, or `ReentrantLock` for thread safety.     |
+| **Synchronized Methods** | Block other threads from accessing **any** synchronized method of the same object. |
+
