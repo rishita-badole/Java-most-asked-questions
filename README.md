@@ -1582,3 +1582,197 @@ class Test {
 | **Synchronization**   | Use `synchronized`, `volatile`, or `ReentrantLock` for thread safety.     |
 | **Synchronized Methods** | Block other threads from accessing **any** synchronized method of the same object. |
 
+### **110) Can a Thread Access Other Synchronized Methods of the Same Object While Holding a Lock?**  
+**✅ Yes!**  
+- If a thread holds the lock (by executing a `synchronized` method), it can **enter other `synchronized` methods** of the **same object** without blocking.  
+- This is called **reentrant synchronization**.  
+
+**Example:**  
+```java
+class Test {
+    public synchronized void methodA() {
+        System.out.println("In methodA");
+        methodB(); // Allowed (same thread already holds the lock)
+    }
+    public synchronized void methodB() {
+        System.out.println("In methodB");
+    }
+}
+// Thread calling methodA() can also execute methodB() without releasing the lock.
+```
+
+---
+
+### **111) Synchronized Blocks in Java**  
+- **Purpose:** Synchronize **only a block of code** (not the entire method).  
+- **Syntax:**  
+  ```java
+  synchronized (lockObject) { /* Critical section */ }
+  ```
+- **Advantage:** More granular control than synchronized methods.  
+
+**Example:**  
+```java
+public void increment() {
+    synchronized (this) { // Locks current object
+        count++;
+    }
+}
+```
+
+---
+
+### **112) When to Use Synchronized Blocks?**  
+**Use Cases:**  
+1. **Performance Optimization:** Synchronize only critical sections, not entire methods.  
+2. **Flexible Locking:** Lock on **any object** (not just `this`).  
+
+**Advantages:**  
+✔ Reduces contention by minimizing locked code.  
+✔ Allows synchronization on **external objects**.  
+
+**Example:**  
+```java
+private final Object lock = new Object(); // External lock
+
+public void update() {
+    // Non-critical code
+    synchronized (lock) { // Critical section
+        sharedResource.modify();
+    }
+}
+```
+
+---
+
+### **113) Class-Level Lock**  
+- **Definition:** A lock on the **class object** (applies to `static synchronized` methods/blocks).  
+- **Effect:** Prevents concurrent access to **all static synchronized methods** of the class.  
+
+**Example:**  
+```java
+class Counter {
+    public static synchronized void staticMethod() { /* Class-level lock */ }
+    public static void staticBlock() {
+        synchronized (Counter.class) { /* Same as static synchronized */ }
+    }
+}
+```
+
+---
+
+### **114) Can We Synchronize Static Methods?**  
+**✅ Yes!**  
+- Uses a **class-level lock** (not instance-level).  
+
+**Example:**  
+```java
+public static synchronized void staticSyncMethod() { /* Thread-safe */ }
+```
+
+---
+
+### **115) Can We Use Synchronized Blocks for Primitives?**  
+**❌ No!**  
+- Synchronized blocks require an **object reference** (primitives like `int`, `double` cannot be locks).  
+
+**Invalid Example:**  
+```java
+int x = 10;
+synchronized (x) { } // ❌ Compile error (primitives not allowed)
+```
+
+**Workaround:** Use a wrapper object (e.g., `Integer`):  
+```java
+final Integer lock = 10;
+synchronized (lock) { /* Valid */ }
+```
+
+---
+
+### **116) Thread Priorities in Java**  
+- **Purpose:** Hint to the scheduler about **thread execution order** (not guaranteed).  
+- **Range:** `1` (MIN_PRIORITY) to `10` (MAX_PRIORITY). Default: `5` (NORM_PRIORITY).  
+
+**Example:**  
+```java
+Thread t = new Thread(() -> System.out.println("Running"));
+t.setPriority(Thread.MAX_PRIORITY); // Priority = 10
+t.start();
+```
+
+---
+
+### **117) Types of Thread Priorities**  
+1. **`MIN_PRIORITY` (1)** → Least priority.  
+2. **`NORM_PRIORITY` (5)** → Default priority.  
+3. **`MAX_PRIORITY` (10)** → Highest priority.  
+
+---
+
+### **118) How to Set Thread Priority?**  
+Use `setPriority(int priority)`:  
+```java
+Thread t = new Thread(() -> {});
+t.setPriority(Thread.MAX_PRIORITY); // Set to 10
+```
+
+---
+
+### **119) If Two Threads Have the Same Priority, Which Runs First?**  
+- **Depends on the JVM scheduler** (no guaranteed order).  
+- May follow **FIFO**, **round-robin**, or **platform-specific policies**.  
+
+---
+
+### **120) Methods to Prevent Thread Execution**  
+1. **`Thread.sleep(long ms)`** → Pauses the thread for a fixed time.  
+2. **`Thread.yield()`** → Suggests that the thread **relinquishes CPU**.  
+3. **`object.wait()`** → Releases lock and waits for `notify()`.  
+4. **`thread.join()`** → Waits for another thread to die.  
+
+**Example:**  
+```java
+Thread t1 = new Thread(() -> {
+    Thread.sleep(1000); // Pauses for 1 second
+});
+t1.start();
+t1.join(); // Main thread waits for t1 to finish
+```
+
+---
+
+### **121) `yield()` Method**  
+- **Purpose:** A hint to the scheduler that the thread is willing to **yield its CPU time**.  
+- **Effect:** The thread moves to **runnable state**, allowing other threads to run.  
+
+**Example:**  
+```java
+Thread t = new Thread(() -> {
+    Thread.yield(); // May pause execution
+    System.out.println("Task resumed");
+});
+```
+
+---
+
+### **122) Can a Yielded Thread Get CPU Time Again Immediately?**  
+**✅ Yes, but not guaranteed.**  
+- The scheduler **may re-select the same thread** if no higher-priority threads are running.  
+
+**Example:**  
+```java
+Thread.yield(); // May resume execution right after
+```
+
+---
+
+### **Summary Table**  
+| Concept               | Key Points                                                                 |
+|-----------------------|---------------------------------------------------------------------------|
+| **Reentrant Locks**   | A thread can call other `synchronized` methods of the same object.        |
+| **Synchronized Blocks** | More granular than methods; lock on any object.                          |
+| **Class-Level Lock**  | Applies to `static synchronized` methods/blocks.                          |
+| **Thread Priorities** | Hints (1–10) with no strict enforcement.                                 |
+| **`yield()`**         | Suggests releasing CPU time (no guarantees).                             |
+
